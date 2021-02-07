@@ -29,7 +29,7 @@ public class ProductController {
             Connection connection= DriverManager.getConnection(
                     DemoApplication.URL, DemoApplication.ROOT, DemoApplication.ROOT);
 
-            PreparedStatement statement=connection.prepareStatement("select * from products join users on products.user_id=users.id");
+            PreparedStatement statement=connection.prepareStatement("select * from products join users on products.user_id=users.id order by time desc ");
             ResultSet resultSet=statement.executeQuery();
             while (resultSet.next()){
                 product=new Product();
@@ -84,7 +84,7 @@ public class ProductController {
 
                 statement.executeUpdate();
 
-                response.put("success", "Product with name:" + product.getName()+"created");
+                response.put("success", "Product with name:" + product.getName()+" created");
                 return ResponseEntity.status(200).body(response.toString());
 
             } else {
@@ -180,7 +180,7 @@ public class ProductController {
             Connection connection= DriverManager.getConnection(
                     DemoApplication.URL, DemoApplication.ROOT, DemoApplication.ROOT);
 
-            PreparedStatement statement=connection.prepareStatement("select * from products WHERE id="+productId);
+            PreparedStatement statement=connection.prepareStatement("select * from products join users on products.user_id=users.id where products.id="+productId);
             ResultSet resultSet=statement.executeQuery();
             while (resultSet.next()){
                 product=new Product();
@@ -189,9 +189,8 @@ public class ProductController {
                 product.setDescription(resultSet.getString("description"));
                 product.setPrice(resultSet.getDouble("price"));
                 product.setImgUrl(resultSet.getString("image"));
-                //doplnit cas registracie
-
-
+                product.setUserName(resultSet.getString("username"));
+                product.setCreateTime(resultSet.getDate("time"));
             }
 
         } catch (SQLException e) {
@@ -210,7 +209,8 @@ public class ProductController {
             Connection connection= DriverManager.getConnection(
                     DemoApplication.URL, DemoApplication.ROOT, DemoApplication.ROOT);
 
-            PreparedStatement statement=connection.prepareStatement("select * from products join users on products.user_id=users.id WHERE user_id=" +userId);
+            PreparedStatement statement=connection.prepareStatement("select * from products join users on products.user_id=users.id WHERE user_id=" +userId +
+                    " order by time desc");
             ResultSet resultSet=statement.executeQuery();
             while (resultSet.next()){
                 product=new Product();
